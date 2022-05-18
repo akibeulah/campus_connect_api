@@ -40,15 +40,19 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    avatar = models.CharField(default="", max_length=255, null=False, blank=False)
     username = models.CharField(db_index=True, max_length=255, unique=True)
     email = models.EmailField(db_index=True, unique=True, null=True, blank=True)
+
     first_name = models.CharField(max_length=150, blank=True)
     last_name = models.CharField(max_length=150, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
+
     is_vendor = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+
     biometrics_auth = models.BooleanField(default=True)
     biometrics_enabled = models.BooleanField(default=True)
     biometrics_password = models.CharField(max_length=255, blank=True, null=True)
@@ -57,6 +61,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     rfid_auth_id = models.CharField(max_length=255, blank=True, null=True)
     rfid_auth_pin = models.CharField(max_length=255, blank=True, null=True)
     rfid_auth_attempts = models.IntegerField(default=0, blank=True, null=True)
+
+    limit_charges = models.BooleanField(default=False)
+    daily_transaction_limit = models.IntegerField(default=0)
+    pos_enabled = models.BooleanField(default=True)
+    atm_enabled = models.BooleanField(default=True)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email', 'first_name', 'last_name']

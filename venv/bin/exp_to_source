@@ -1,0 +1,6 @@
+#!/mnt/0A04AA576FFEBB0F/Projects/campus_connect/backend/venv/bin/python3
+
+from jwst.exp_to_source.main import Main
+
+if __name__ == '__main__':
+   Main()

@@ -76,5 +76,107 @@ class UserAdminManagement(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ConsumerAccountManagement(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=False, methods=['patch'], url_path='reset_password')
+    def reset_password(self, request):
+        user = User.objects.get(username=request.user)
+        valid = user.check_password(request.data['pwd'])
+
+        if valid:
+            user.set_password(request.data['new_pwd'])
+            user.save()
+            return Response({'message': "Password Successfully Updated!"}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': "Something went wrong, please try again!"}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['patch'], url_path='update_enabled_auth')
+    def update_enabled_auth(self, request):
+        user = User.objects.get(username=request.user)
+        if request.data['type'] == 'fingerprint':
+            if user.biometrics_auth:
+                user.biometrics_auth = False
+            else:
+                user.biometrics_auth = True
+            user.save()
+            return Response(
+                {
+                    'message': "Biometrics Authentications turned on" if user.biometrics_auth else "Biometrics Authentications turned off",
+                    "biometrics_enabled": user.biometrics_auth,
+                    "rfid_auth_enabled": user.rfid_auth_enabled,
+                    "limit_charges": user.limit_charges,
+                    "pos_enabled": user.pos_enabled,
+                    "atm_enabled": user.atm_enabled,
+                },
+                status=status.HTTP_200_OK)
+        elif request.data['type'] == 'rfid':
+            if user.rfid_auth_enabled:
+                user.rfid_auth_enabled = False
+            else:
+                user.rfid_auth_enabled = True
+            user.save()
+            return Response(
+                {
+                    'message': "RFID Authentications turned on" if user.rfid_auth_enabled else "RFID Authentications turned off",
+                    "biometrics_enabled": user.biometrics_auth,
+                    "rfid_auth_enabled": user.rfid_auth_enabled,
+                    "limit_charges": user.limit_charges,
+                    "pos_enabled": user.pos_enabled,
+                    "atm_enabled": user.atm_enabled,
+                },
+                status=status.HTTP_200_OK)
+        elif request.data['type'] == 'pos_enabled':
+            if user.pos_enabled:
+                user.pos_enabled = False
+            else:
+                user.pos_enabled = True
+            user.save()
+            return Response(
+                {
+                    'message': "POS transactions turned on" if user.pos_enabled else "POS transactions turned off",
+                    "biometrics_enabled": user.biometrics_auth,
+                    "rfid_auth_enabled": user.rfid_auth_enabled,
+                    "limit_charges": user.limit_charges,
+                    "pos_enabled": user.pos_enabled,
+                    "atm_enabled": user.atm_enabled,
+                },
+                status=status.HTTP_200_OK)
+        elif request.data['type'] == 'limit_charges':
+            if user.limit_charges:
+                user.limit_charges = False
+            else:
+                user.limit_charges = True
+            user.save()
+            return Response(
+                {
+                    'message': "Transaction limits turned on" if user.limit_charges else "Transaction limits turned off",
+                    "biometrics_enabled": user.biometrics_auth,
+                    "rfid_auth_enabled": user.rfid_auth_enabled,
+                    "limit_charges": user.limit_charges,
+                    "pos_enabled": user.pos_enabled,
+                    "atm_enabled": user.atm_enabled,
+                },
+                status=status.HTTP_200_OK)
+        elif request.data['type'] == 'atm_enabled':
+            if user.atm_enabled:
+                user.atm_enabled = False
+            else:
+                user.atm_enabled = True
+            user.save()
+            return Response(
+                {
+                    'message': "ATM transactions turned on" if user.rfid_auth_enabled else "ATM transactions turned off",
+                    "biometrics_enabled": user.biometrics_auth,
+                    "rfid_auth_enabled": user.rfid_auth_enabled,
+                    "limit_charges": user.limit_charges,
+                    "pos_enabled": user.pos_enabled,
+                    "atm_enabled": user.atm_enabled,
+                },
+                status=status.HTTP_200_OK)
+        else:
+            return Response({'message': "Something went wrong, please try again!"}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer

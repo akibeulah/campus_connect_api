@@ -41,4 +41,45 @@ class Transaction(models.Model):
     consumer = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name='consumer')
     vendor = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name='vendor')
     pos = models.ForeignKey(POS, on_delete=models.PROTECT, null=True, blank=True)
+    reversed = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
+
+
+class POSHandovers(models.Model):
+    REQUEST_TYPE = (
+        ('OBTAIN', 'obtain'),
+        ('RETURN', 'return'),
+        ('MAINTAIN', 'maintain'),
+        ('SEIZE', 'seize')
+    )
+
+    REQUEST_APPROVAL = (
+        ('APPROVED', 'approved'),
+        ('REJECTED', 'rejected'),
+        ('PENDING', 'pending')
+    )
+
+    vendor = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name='vendor_requesting_handover')
+    request_made_at = models.DateTimeField(default=timezone.now)
+    request_type = models.CharField(max_length=15, blank=False, null=False, choices=REQUEST_TYPE, default="OBTAIN")
+    request_desc = models.TextField(blank=False, default="", null=True)
+
+    request_approval = models.CharField(max_length=15, blank=False, null=False, choices=REQUEST_APPROVAL, default="PENDING")
+    pos = models.ForeignKey(POS, on_delete=models.PROTECT, null=True, blank=True)
+
+    collected_at = models.DateTimeField(null=True, blank=True)
+    returned_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class Remittance(models.Model):
+    REQUEST_APPROVAL = (
+        ('APPROVED', 'approved'),
+        ('REJECTED', 'rejected'),
+        ('PENDING', 'pending')
+    )
+
+    vendor = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name='vendor_requesting_remittance')
+    request_approval = models.CharField(max_length=15, blank=False, null=False, choices=REQUEST_APPROVAL, default="PENDING")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

@@ -1,0 +1,10 @@
+#!/mnt/0A04AA576FFEBB0F/Projects/campus_connect/backend/venv/bin/python3
+#-*-python-*-
+
+import sys
+
+from crds.query_affected import QueryAffectedDatasetsScript
+            
+if __name__ == "__main__":
+    sys.exit(QueryAffectedDatasetsScript()())
+

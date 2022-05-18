@@ -15,4 +15,5 @@ urlpatterns = [
     # V1
     path('api/v1/user/', include('user.urls', namespace='users_api')),
     path('api/v1/pos/', include('pos.urls', namespace='pos_api')),
+    path('api/v1/communication/', include('communication.urls', namespace='communication_api')),
 ]
